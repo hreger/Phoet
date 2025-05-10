@@ -14,11 +14,17 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {
   analyzePhoto,
+  // Import schemas from the new central location
+  // type AnalyzePhotoInput, // Already imported below
+  // type AnalyzePhotoOutput, // Already imported below
+} from './analyze-photo';
+import {
   AnalyzePhotoInputSchema,
   AnalyzePhotoOutputSchema,
   type AnalyzePhotoInput,
   type AnalyzePhotoOutput,
-} from './analyze-photo';
+} from '@/ai/schemas/photo-analysis-schemas';
+
 
 const GeneratePoemInputSchema = z.object({
   photoDataUri: z
@@ -34,6 +40,9 @@ const GeneratePoemOutputSchema = z.object({
 });
 export type GeneratePoemOutput = z.infer<typeof GeneratePoemOutputSchema>;
 
+// Export only the async function and types
+export type { GeneratePoemInput, GeneratePoemOutput };
+
 export async function generatePoem(input: GeneratePoemInput): Promise<GeneratePoemOutput> {
   return generatePoemFlow(input);
 }
@@ -42,8 +51,8 @@ const analyzePhotoTool = ai.defineTool(
   {
     name: 'analyzePhoto', // Name registered with Genkit, used by LLM in prompts
     description: 'Analyzes a photo and extracts key elements, emotions, and themes by calling the analyzePhoto flow.',
-    inputSchema: AnalyzePhotoInputSchema,
-    outputSchema: AnalyzePhotoOutputSchema,
+    inputSchema: AnalyzePhotoInputSchema, // Use imported schema
+    outputSchema: AnalyzePhotoOutputSchema, // Use imported schema
   },
   async (input: AnalyzePhotoInput): Promise<AnalyzePhotoOutput> => {
     // Call the imported analyzePhoto flow
@@ -73,7 +82,7 @@ const generatePoemFlow = ai.defineFlow(
     inputSchema: GeneratePoemInputSchema,
     outputSchema: GeneratePoemOutputSchema,
   },
-  async input => {
+  async (input: GeneratePoemInput) => { // Corrected from (input => { to async (input: GeneratePoemInput) => {
     const {output} = await poemPrompt(input);
     return output!;
   }

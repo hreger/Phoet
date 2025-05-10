@@ -1,33 +1,26 @@
 'use server';
 
 /**
- * @fileOverview Analyzes a photo to identify key elements, emotions, and themes.
+ * @fileOverview Analyzes a photo to identify key elements, emotions, and themes using an AI flow.
+ * This file defines the server-side flow logic for photo analysis.
+ * Schemas are imported from '@/ai/schemas/photo-analysis-schemas'.
  *
- * - analyzePhoto - A function that handles the photo analysis process.
- * - AnalyzePhotoInput - The input type for the analyzePhoto function.
- * - AnalyzePhotoOutput - The return type for the analyzePhoto function.
- * - AnalyzePhotoInputSchema - The Zod schema for AnalyzePhotoInput.
- * - AnalyzePhotoOutputSchema - The Zod schema for AnalyzePhotoOutput.
+ * Exports:
+ * - analyzePhoto: An async function that takes AnalyzePhotoInput and returns AnalyzePhotoOutput.
+ * - AnalyzePhotoInput: The TypeScript type for the input to the analyzePhoto flow.
+ * - AnalyzePhotoOutput: The TypeScript type for the output from the analyzePhoto flow.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+  AnalyzePhotoInputSchema,
+  AnalyzePhotoOutputSchema,
+  type AnalyzePhotoInput,
+  type AnalyzePhotoOutput,
+} from '@/ai/schemas/photo-analysis-schemas';
 
-export const AnalyzePhotoInputSchema = z.object({
-  photoDataUri: z
-    .string()
-    .describe(
-      "A photo to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
-});
-export type AnalyzePhotoInput = z.infer<typeof AnalyzePhotoInputSchema>;
-
-export const AnalyzePhotoOutputSchema = z.object({
-  elements: z.string().describe('Key elements found in the photo.'),
-  emotions: z.string().describe('Emotions evoked by the photo.'),
-  themes: z.string().describe('Themes present in the photo.'),
-});
-export type AnalyzePhotoOutput = z.infer<typeof AnalyzePhotoOutputSchema>;
+// Export only the async function and types as per 'use server' and Genkit guidelines
+export type { AnalyzePhotoInput, AnalyzePhotoOutput };
 
 export async function analyzePhoto(input: AnalyzePhotoInput): Promise<AnalyzePhotoOutput> {
   return analyzePhotoFlow(input);
@@ -55,7 +48,7 @@ const analyzePhotoFlow = ai.defineFlow(
     inputSchema: AnalyzePhotoInputSchema,
     outputSchema: AnalyzePhotoOutputSchema,
   },
-  async input => {
+  async (input: AnalyzePhotoInput) => { // Corrected from (input => { to async (input: AnalyzePhotoInput) => {
     const {output} = await analyzePhotoPrompt(input);
     return output!;
   }

@@ -46,8 +46,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/photo-poet.git
-cd photo-poet
+git clone https://github.com/hreger/Phoet.git
+cd Phoet
 
 # Install dependencies
 npm install  # or pip install -r requirements.txt depending on your stack
@@ -87,7 +87,7 @@ Feel free to fork the repo and submit a pull request.
 
 ## 🌐 Screenshots
 
-🚀 Coming Soon! (Or include link here)
+![Example Screenshot](screenshots/example.png)
 
 ---
 
